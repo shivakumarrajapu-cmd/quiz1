@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuiz - Online Examination System</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#2563eb;
+    --dark:#0f172a;
+    --bg:#f1f5f9;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --warning:#f59e0b;
+}
+
+body{
+    background:var(--bg);
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:#1e293b;
+}
+
+.login-page{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#1d4ed8,#7c3aed);
+    padding:20px;
+}
+
+.login-card{
+    width:100%;
+    max-width:430px;
+    background:white;
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 25px 60px rgba(0,0,0,.2);
+}
+
+.logo{
+    width:60px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--primary);
+    color:white;
+    border-radius:16px;
+    font-size:28px;
+    margin:auto;
+}
+
+.app{
+    display:none;
+}
+
+.sidebar{
+    width:250px;
+    min-height:100vh;
+    background:var(--dark);
+    color:white;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    padding:20px 15px;
+    z-index:1000;
+}
+
+.sidebar-brand{
+    font-size:22px;
+    font-weight:700;
+    padding:10px;
+    margin-bottom:25px;
+}
+
+.sidebar a{
+    color:#cbd5e1;
+    text-decoration:none;
+    display:block;
+    padding:12px 15px;
+    border-radius:10px;
+    margin-bottom:5px;
+    cursor:pointer;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#1e40af;
+    color:white;
+}
+
+.main{
+    margin-left:250px;
+    min-height:100vh;
+}
+
+.topbar{
+    background:white;
+    padding:15px 25px;
+    border-bottom:1px solid #e2e8f0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.content{
+    padding:25px;
+}
+
+.stat-card{
+    background:white;
+    border:0;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 5px 20px rgba(15,23,42,.05);
+}
+
+.stat-icon{
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+}
+
+.exam-card{
+    background:white;
+    border:0;
+    border-radius:16px;
+    padding:22px;
+    height:100%;
+    box-shadow:0 5px 20px rgba(15,23,42,.05);
+    transition:.2s;
+}
+
+.exam-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 30px rgba(15,23,42,.1);
+}
+
+.hidden{
+    display:none!important;
+}
+
+.option{
+    border:2px solid #e2e8f0;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.option:hover{
+    border-color:#93c5fd;
+    background:#eff6ff;
+}
+
+.option.selected{
+    border-color:var(--primary);
+    background:#eff6ff;
+}
+
+.option input{
+    margin-right:10px;
+}
+
+.question-number{
+    width:42px;
+    height:42px;
+    border-radius:9px;
+    border:0;
+    margin:4px;
+    background:#e2e8f0;
+    color:#334155;
+}
+
+.question-number.current{
+    background:var(--primary);
+    color:white;
+}
+
+.question-number.answered{
+    background:var(--success);
+    color:white;
+}
+
+.timer{
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:10px 18px;
+    border-radius:10px;
+    font-weight:700;
+    font-size:18px;
+}
+
+.result-circle{
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    background:conic-gradient(var(--primary) var(--percent),#e2e8f0 0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+}
+
+.result-circle-inner{
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+
+.review-card{
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:15px;
+    border-left:5px solid #94a3b8;
+}
+
+.review-card.correct{
+    border-left-color:var(--success);
+}
+
+.review-card.wrong{
+    border-left-color:var(--danger);
+}
+
+.mobile-menu{
+    display:none;
+}
+
+@media(max-width:768px){
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.3s;
+    }
+
+    .sidebar.show{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .content{
+        padding:15px;
+    }
+
+    .topbar{
+        padding:12px 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-page">
+    <div class="login-card">
+        <div class="logo mb-3">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+
+        <h3 class="text-center fw-bold">EduQuiz</h3>
+        <p class="text-center text-muted mb-4">
+            Online Learning & Examination System
+        </p>
+
+        <div class="mb-3">
+            <label class="form-label">Login As</label>
+            <select id="loginRole" class="form-select">
+                <option value="student">Student</option>
+                <option value="admin">Administrator</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Username / Email</label>
+            <input id="username" class="form-control" placeholder="Enter username">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input id="password" type="password" class="form-control" placeholder="Enter password">
+        </div>
+
+        <div id="loginError" class="alert alert-danger d-none"></div>
+
+        <button class="btn btn-primary w-100 py-2" onclick="login()">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+        </button>
+
+        <div class="text-center mt-4 small text-muted">
+            Demo Admin: <b>admin / admin123</b><br>
+            Demo Student: <b>student / student123</b>
+        </div>
+    </div>
+</div>
+
+<!-- APPLICATION -->
+<div id="app" class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-brand">
+            <i class="bi bi-mortarboard-fill text-primary"></i>
+            EduQuiz
+        </div>
+
+        <div id="adminMenu">
+            <a class="active" onclick="showPage('adminDashboard',this)">
+                <i class="bi bi-grid me-2"></i> Dashboard
+            </a>
+
+            <a onclick="showPage('examManagement',this)">
+                <i class="bi bi-file-earmark-text me-2"></i> Exams
+            </a>
+
+            <a onclick="showPage('questionManagement',this)">
+                <i class="bi bi-question-circle me-2"></i> Questions
+            </a>
+
+            <a onclick="showPage('studentManagement',this)">
+                <i class="bi bi-people me-2"></i> Students
+            </a>
+
+            <a onclick="showPage('adminResults',this)">
+                <i class="bi bi-bar-chart me-2"></i> Results
+            </a>
+        </div>
+
+        <div id="studentMenu">
+            <a class="active" onclick="showPage('studentDashboard',this)">
+                <i class="bi bi-grid me-2"></i> Dashboard
+            </a>
+
+            <a onclick="showPage('availableExams',this)">
+                <i class="bi bi-pencil-square me-2"></i> Exams
+            </a>
+
+            <a onclick="showPage('myResults',this)">
+                <i class="bi bi-bar-chart me-2"></i> My Results
+            </a>
+        </div>
+
+        <a onclick="logout()" class="mt-4 text-danger">
+            <i class="bi bi-box-arrow-left me-2"></i> Logout
+        </a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="topbar">
+            <button class="btn btn-outline-primary mobile-menu" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <div>
+                <h5 class="mb-0" id="pageTitle">Dashboard</h5>
+            </div>
+
+            <div>
+                <span id="userName" class="fw-semibold"></span>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- ADMIN DASHBOARD -->
+            <section id="adminDashboard" class="page">
+
+                <div class="mb-4">
+                    <h3 class="fw-bold">Admin Dashboard</h3>
+                    <p class="text-muted">Manage your online examinations.</p>
+                </div>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <small class="text-muted">Total Students</small>
+                                    <h2 id="statStudents">0</h2>
+                                </div>
+                                <div class="stat-icon bg-primary-subtle text-primary">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <small class="text-muted">Total Exams</small>
+                                    <h2 id="statExams">0</h2>
+                                </div>
+                                <div class="stat-icon bg-success-subtle text-success">
+                                    <i class="bi bi-file-text"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <small class="text-muted">Questions</small>
+                                    <h2 id="statQuestions">0</h2>
+                                </div>
+                                <div class="stat-icon bg-warning-subtle text-warning">
+                                    <i class="bi bi-question-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <small class="text-muted">Results</small>
+                                    <h2 id="statResults">0</h2>
+                                </div>
+                                <div class="stat-icon bg-danger-subtle text-danger">
+                                    <i class="bi bi-bar-chart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="stat-card">
+                    <h5 class="fw-bold mb-3">Recent Results</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Exam</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentResults"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXAM MANAGEMENT -->
+            <section id="examManagement" class="page hidden">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="fw-bold">Exam Management</h3>
+                        <p class="text-muted">Create and manage examinations.</p>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="openExamModal()">
+                        <i class="bi bi-plus-lg"></i> Create Exam
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Exam</th>
+                                    <th>Subject</th>
+                                    <th>Questions</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- QUESTIONS -->
+            <section id="questionManagement" class="page hidden">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="fw-bold">Question Management</h3>
+                        <p class="text-muted">Create multiple-choice questions.</p>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="openQuestionModal()">
+                        <i class="bi bi-plus-lg"></i> Add Question
+                    </button>
+                </div>
+
+                <div id="questionList"></div>
+            </section>
+
+            <!-- STUDENTS -->
+            <section id="studentManagement" class="page hidden">
+
+                <div class="d-flex justify-content-between mb-4">
+                    <div>
+                        <h3 class="fw-bold">Students</h3>
+                        <p class="text-muted">Manage student accounts.</p>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="addStudent()">
+                        <i class="bi bi-person-plus"></i> Add Student
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN RESULTS -->
+            <section id="adminResults" class="page hidden">
+
+                <h3 class="fw-bold mb-4">Student Results</h3>
+
+                <div class="stat-card">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Exam</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminResultTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STUDENT DASHBOARD -->
+            <section id="studentDashboard" class="page hidden">
+
+                <div class="mb-4">
+                    <h3 class="fw-bold">Welcome, <span id="studentWelcome"></span> 👋</h3>
+                    <p class="text-muted">Ready to test your knowledge?</p>
+                </div>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <small class="text-muted">Available Exams</small>
+                            <h2 id="availableCount">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <small class="text-muted">Exams Completed</small>
+                            <h2 id="completedCount">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <small class="text-muted">Average Percentage</small>
+                            <h2 id="averagePercentage">0%</h2>
+                        </div>
+                    </div>
+
+                </div>
+
+                <h5 class="fw-bold mb-3">Available Examinations</h5>
+
+                <div class="row g-3" id="studentExamCards"></div>
+            </section>
+
+            <!-- AVAILABLE EXAMS -->
+            <section id="availableExams" class="page hidden">
+
+                <h3 class="fw-bold mb-4">Available Examinations</h3>
+
+                <div class="row g-3" id="availableExamCards"></div>
+            </section>
+
+            <!-- MY RESULTS -->
+            <section id="myResults" class="page hidden">
+
+                <h3 class="fw-bold mb-4">My Results</h3>
+
+                <div class="stat-card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Exam</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myResultTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXAM SCREEN -->
+            <section id="examScreen" class="page hidden">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 id="currentExamTitle" class="fw-bold"></h3>
+                        <small id="currentExamSubject" class="text-muted"></small>
+                    </div>
+
+                    <div class="timer" id="timer">
+                        00:00
+                    </div>
+                </div>
+
+                <div class="row g-4">
+
+                    <div class="col-lg-8">
+
+                        <div class="stat-card">
+
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="badge bg-primary" id="questionCounter">
+                                    Question 1
+                                </span>
+
+                                <span class="text-muted">
+                                    Select one answer
+                                </span>
+                            </div>
+
+                            <h4 id="questionText" class="mb-4"></h4>
+
+                            <div id="options"></div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button class="btn btn-outline-secondary" onclick="previousQuestion()">
+                                    <i class="bi bi-arrow-left"></i> Previous
+                                </button>
+
+                                <button class="btn btn-primary" onclick="nextQuestion()">
+                                    Next <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+
+                        <div class="stat-card">
+                            <h6 class="fw-bold">Questions</h6>
+
+                            <div id="questionNavigation" class="my-3"></div>
+
+                            <hr>
+
+                            <button class="btn btn-success w-100" onclick="submitExam()">
+                                <i class="bi bi-check-circle"></i>
+                                Submit Examination
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- RESULT -->
+            <section id="resultScreen" class="page hidden">
+
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">Examination Result</h2>
+                    <p class="text-muted" id="resultExamName"></p>
+                </div>
+
+                <div class="stat-card text-center mb-4">
+
+                    <div id="resultCircle" class="result-circle mb-3">
+                        <div class="result-circle-inner">
+                            <h2 id="resultPercentage" class="fw-bold mb-0">0%</h2>
+                            <small>Score</small>
+                        </div>
+                    </div>
+
+                    <h3 id="resultStatus"></h3>
+
+                    <div class="row mt-4">
+
+                        <div class="col-6 col-md-3">
+                            <h4 id="resultScore">0</h4>
+                            <small class="text-muted">Score</small>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <h4 id="resultTotal">0</h4>
+                            <small class="text-muted">Total Marks</small>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <h4 id="resultCorrect">0</h4>
+                            <small class="text-muted">Correct</small>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <h4 id="resultWrong">0</h4>
+                            <small class="text-muted">Wrong</small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mb-3">Answer Review</h4>
+
+                <div id="answerReview"></div>
+
+                <button class="btn btn-primary mt-3" onclick="backToStudentDashboard()">
+                    <i class="bi bi-house"></i> Back to Dashboard
+                </button>
+
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- EXAM MODAL -->
+<div class="modal fade" id="examModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+
+    <div class="modal-header">
+        <h5 class="modal-title">Create Examination</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="mb-3">
+            <label class="form-label">Exam Title</label>
+            <input id="examTitle" class="form-control" placeholder="Mathematics Examination">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input id="examSubject" class="form-control" placeholder="Mathematics">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Duration (minutes)</label>
+            <input id="examDuration" type="number" class="form-control" value="10">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Passing Percentage</label>
+            <input id="examPassing" type="number" class="form-control" value="40">
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="createExam()">Create Exam</button>
+    </div>
+
+</div>
+</div>
+</div>
+
+<!-- QUESTION MODAL -->
+<div class="modal fade" id="questionModal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+
+    <div class="modal-header">
+        <h5 class="modal-title">Add Question</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="mb-3">
+            <label class="form-label">Select Exam</label>
+            <select id="questionExam" class="form-select"></select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Question</label>
+            <textarea id="questionTextInput" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label>Option A</label>
+                <input id="optionA" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Option B</label>
+                <input id="optionB" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Option C</label>
+                <input id="optionC" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Option D</label>
+                <input id="optionD" class="form-control">
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correct Answer</label>
+            <select id="correctAnswer" class="form-select">
+                <option value="0">Option A</option>
+                <option value="1">Option B</option>
+                <option value="2">Option C</option>
+                <option value="3">Option D</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Explanation</label>
+            <textarea id="questionExplanation" class="form-control"></textarea>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="createQuestion()">Save Question</button>
+    </div>
+
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+let exams = JSON.parse(localStorage.getItem("eduquiz_exams")) || [
+    {
+        id:1,
+        title:"General Knowledge Test",
+        subject:"General Knowledge",
+        duration:10,
+        passing:40,
+        published:true
+    }
+];
+
+let questions = JSON.parse(localStorage.getItem("eduquiz_questions")) || [
+    {
+        id:1,
+        examId:1,
+        text:"What is the capital of India?",
+        options:["Mumbai","New Delhi","Chennai","Kolkata"],
+        correct:1,
+        explanation:"New Delhi is the capital city of India."
+    },
+    {
+        id:2,
+        examId:1,
+        text:"Which planet is known as the Red Planet?",
+        options:["Earth","Jupiter","Mars","Venus"],
+        correct:2,
+        explanation:"Mars is commonly called the Red Planet."
+    },
+    {
+        id:3,
+        examId:1,
+        text:"How many days are there in a week?",
+        options:["5","6","7","8"],
+        correct:2,
+        explanation:"There are seven days in a week."
+    }
+];
+
+let students = JSON.parse(localStorage.getItem("eduquiz_students")) || [
+    {
+        id:1,
+        name:"Demo Student",
+        username:"student",
+        password:"student123",
+        course:"Computer Science",
+        status:"Active"
+    }
+];
+
+let results = JSON.parse(localStorage.getItem("eduquiz_results")) || [];
+
+let currentUser = null;
+let currentExam = null;
+let currentQuestion = 0;
+let answers = [];
+let timerInterval = null;
+let remainingSeconds = 0;
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function saveData(){
+    localStorage.setItem("eduquiz_exams",JSON.stringify(exams));
+    localStorage.setItem("eduquiz_questions",JSON.stringify(questions));
+    localStorage.setItem("eduquiz_students",JSON.stringify(students));
+    localStorage.setItem("eduquiz_results",JSON.stringify(results));
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+function login(){
+
+    const role = document.getElementById("loginRole").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const error = document.getElementById("loginError");
+
+    if(!username || !password){
+        error.textContent = "Please enter username and password.";
+        error.classList.remove("d-none");
+        return;
+    }
+
+    if(role === "admin" &&
+       username === "admin" &&
+       password === "admin123"){
+
+        currentUser = {
+            role:"admin",
+            name:"Administrator"
+        };
+
+    }else if(role === "student"){
+
+        const student = students.find(
+            s => s.username === username &&
+                 s.password === password
+        );
+
+        if(student){
+            currentUser = {
+                role:"student",
+                ...student
+            };
+        }
+    }
+
+    if(!currentUser){
+        error.textContent = "Invalid username or password.";
+        error.classList.remove("d-none");
+        return;
+    }
+
+    error.classList.add("d-none");
+
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("app").style.display="block";
+
+    document.getElementById("userName").textContent =
+        currentUser.name;
+
+    if(currentUser.role === "admin"){
+        document.getElementById("adminMenu").style.display="block";
+        document.getElementById("studentMenu").style.display="none";
+        showPage("adminDashboard");
+        refreshAdmin();
+    }else{
+        document.getElementById("adminMenu").style.display="none";
+        document.getElementById("studentMenu").style.display="block";
+        showPage("studentDashboard");
+        refreshStudent();
+    }
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout(){
+
+    if(timerInterval){
+        clearInterval(timerInterval);
+    }
+
+    currentUser=null;
+
+    document.getElementById("app").style.display="none";
+    document.getElementById("loginPage").style.display="flex";
+
+    document.getElementById("username").value="";
+    document.getElementById("password").value="";
+}
+
+
+/* =========================
+   PAGE NAVIGATION
+========================= */
+
+function showPage(id,element){
+
+    document.querySelectorAll(".page").forEach(page=>{
+        page.classList.add("hidden");
+    });
+
+    document.getElementById(id).classList.remove("hidden");
+
+    if(element){
+        document.querySelectorAll(".sidebar a").forEach(a=>{
+            a.classList.remove("active");
+        });
+
+        element.classList.add("active");
+    }
+
+    const titles={
+        adminDashboard:"Admin Dashboard",
+        examManagement:"Exam Management",
+        questionManagement:"Question Management",
+        studentManagement:"Student Management",
+        adminResults:"Student Results",
+        studentDashboard:"Student Dashboard",
+        availableExams:"Available Exams",
+        myResults:"My Results",
+        examScreen:"Examination",
+        resultScreen:"Examination Result"
+    };
+
+    document.getElementById("pageTitle").textContent =
+        titles[id] || "EduQuiz";
+
+    if(id==="adminDashboard") refreshAdmin();
+    if(id==="examManagement") renderExams();
+    if(id==="questionManagement") renderQuestions();
+    if(id==="studentManagement") renderStudents();
+    if(id==="adminResults") renderAdminResults();
+    if(id==="studentDashboard") refreshStudent();
+    if(id==="availableExams") renderAvailableExams();
+    if(id==="myResults") renderMyResults();
+}
+
+
+/* =========================
+   ADMIN DASHBOARD
+========================= */
+
+function refreshAdmin(){
+
+    document.getElementById("statStudents").textContent=students.length;
+    document.getElementById("statExams").textContent=exams.length;
+    document.getElementById("statQuestions").textContent=questions.length;
+    document.getElementById("statResults").textContent=results.length;
+
+    const tbody=document.getElementById("recentResults");
+
+    tbody.innerHTML="";
+
+    results.slice(-5).reverse().forEach(r=>{
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${r.student}</td>
+            <td>${r.exam}</td>
+            <td>${r.score}/${r.total}</td>
+            <td>${r.percentage}%</td>
+            <td>
+                <span class="badge ${r.status==="PASS"?"bg-success":"bg-danger"}">
+                    ${r.status}
+                </span>
+            </td>
+        </tr>`;
+    });
+}
+
+
+/* =========================
+   EXAMS
+========================= */
+
+function renderExams(){
+
+    const tbody=document.getElementById("examTable");
+
+    tbody.innerHTML="";
+
+    exams.forEach(exam=>{
+
+        const count=questions.filter(
+            q=>q.examId===exam.id
+        ).length;
+
+        tbody.innerHTML += `
+        <tr>
+            <td class="fw-semibold">${exam.title}</td>
+            <td>${exam.subject}</td>
+            <td>${count}</td>
+            <td>${exam.duration} min</td>
+            <td>
+                <span class="badge ${exam.published?"bg-success":"bg-secondary"}">
+                    ${exam.published?"Published":"Draft"}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary"
+                    onclick="toggleExam(${exam.id})">
+                    ${exam.published?"Unpublish":"Publish"}
+                </button>
+
+                <button class="btn btn-sm btn-outline-danger"
+                    onclick="deleteExam(${exam.id})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+}
+
+function openExamModal(){
+
+    document.getElementById("examTitle").value="";
+    document.getElementById("examSubject").value="";
+    document.getElementById("examDuration").value=10;
+    document.getElementById("examPassing").value=40;
+
+    new bootstrap.Modal(
+        document.getElementById("examModal")
+    ).show();
+}
+
+function createExam(){
+
+    const title=document.getElementById("examTitle").value.trim();
+    const subject=document.getElementById("examSubject").value.trim();
+    const duration=parseInt(document.getElementById("examDuration").value);
+    const passing=parseInt(document.getElementById("examPassing").value);
+
+    if(!title || !subject){
+        alert("Please enter exam title and subject.");
+        return;
+    }
+
+    exams.push({
+        id:Date.now(),
+        title,
+        subject,
+        duration,
+        passing,
+        published:true
+    });
+
+    saveData();
+
+    bootstrap.Modal.getInstance(
+        document.getElementById("examModal")
+    ).hide();
+
+    renderExams();
+    refreshAdmin();
+}
+
+function toggleExam(id){
+
+    const exam=exams.find(e=>e.id===id);
+
+    if(exam){
+        exam.published=!exam.published;
+        saveData();
+        renderExams();
+    }
+}
+
+function deleteExam(id){
+
+    if(!confirm("Delete this exam?")) return;
+
+    exams=exams.filter(e=>e.id!==id);
+    questions=questions.filter(q=>q.examId!==id);
+
+    saveData();
+
+    renderExams();
+    refreshAdmin();
+}
+
+
+/* =========================
+   QUESTIONS
+========================= */
+
+function openQuestionModal(){
+
+    const select=document.getElementById("questionExam");
+
+    select.innerHTML="";
+
+    exams.forEach(exam=>{
+        select.innerHTML += `
+        <option value="${exam.id}">
+            ${exam.title}
+        </option>`;
+    });
+
+    document.getElementById("questionTextInput").value="";
+    document.getElementById("optionA").value="";
+    document.getElementById("optionB").value="";
+    document.getElementById("optionC").value="";
+    document.getElementById("optionD").value="";
+    document.getElementById("questionExplanation").value="";
+
+    new bootstrap.Modal(
+        document.getElementById("questionModal")
+    ).show();
+}
+
+function createQuestion(){
+
+    const examId=parseInt(
+        document.getElementById("questionExam").value
+    );
+
+    const text=document.getElementById("questionTextInput").value.trim();
+
+    const options=[
+        document.getElementById("optionA").value.trim(),
+        document.getElementById("optionB").value.trim(),
+        document.getElementById("optionC").value.trim(),
+        document.getElementById("optionD").value.trim()
+    ];
+
+    const correct=parseInt(
+        document.getElementById("correctAnswer").value
+    );
+
+    const explanation=document.getElementById("questionExplanation").value.trim();
+
+    if(!text || options.some(o=>!o)){
+        alert("Please complete all question fields.");
+        return;
+    }
+
+    questions.push({
+        id:Date.now(),
+        examId,
+        text,
+        options,
+        correct,
+        explanation
+    });
+
+    saveData();
+
+    bootstrap.Modal.getInstance(
+        document.getElementById("questionModal")
+    ).hide();
+
+    renderQuestions();
+    refreshAdmin();
+}
+
+function renderQuestions(){
+
+    const container=document.getElementById("questionList");
+
+    container.innerHTML="";
+
+    questions.forEach((q,index)=>{
+
+        const exam=exams.find(e=>e.id===q.examId);
+
+        container.innerHTML += `
+        <div class="stat-card mb-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <span class="badge bg-primary">
+                        ${exam ? exam.title : "Unknown Exam"}
+                    </span>
+
+                    <h5 class="mt-3">
+                        ${index+1}. ${q.text}
+                    </h5>
+
+                    <div class="row">
+                        ${q.options.map((o,i)=>`
+                            <div class="col-md-6 mb-2">
+                                <div class="p-2 border rounded
+                                    ${i===q.correct?"bg-success-subtle":""}">
+                                    ${String.fromCharCode(65+i)}. ${o}
+                                    ${i===q.correct
+                                        ?'<b class="text-success"> ✓ Correct</b>'
+                                        :''}
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <button class="btn btn-sm btn-outline-danger"
+                    onclick="deleteQuestion(${q.id})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>`;
+    });
+}
+
+function deleteQuestion(id){
+
+    if(!confirm("Delete this question?")) return;
+
+    questions=questions.filter(q=>q.id!==id);
+
+    saveData();
+    renderQuestions();
+    refreshAdmin();
+}
+
+
+/* =========================
+   STUDENTS
+========================= */
+
+function renderStudents(){
+
+    const tbody=document.getElementById("studentTable");
+
+    tbody.innerHTML="";
+
+    students.forEach(s=>{
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${s.name}</td>
+            <td>${s.username}</td>
+            <td>${s.course}</td>
+            <td>
+                <span class="badge bg-success">
+                    ${s.status}
+                </span>
+            </td>
+        </tr>`;
+    });
+}
+
+function addStudent(){
+
+    const name=prompt("Student name:");
+
+    if(!name) return;
+
+    const username=prompt("Username:");
+
+    if(!username) return;
+
+    students.push({
+        id:Date.now(),
+        name,
+        username,
+        password:"student123",
+        course:"General",
+        status:"Active"
+    });
+
+    saveData();
+    renderStudents();
+}
+
+
+/* =========================
+   ADMIN RESULTS
+========================= */
+
+function renderAdminResults(){
+
+    const tbody=document.getElementById("adminResultTable");
+
+    tbody.innerHTML="";
+
+    results.slice().reverse().forEach(r=>{
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${r.student}</td>
+            <td>${r.exam}</td>
+            <td>${r.score}/${r.total}</td>
+            <td>${r.percentage}%</td>
+            <td>
+                <span class="badge ${r.status==="PASS"?"bg-success":"bg-danger"}">
+                    ${r.status}
+                </span>
+            </td>
+        </tr>`;
+    });
+}
+
+
+/* =========================
+   STUDENT DASHBOARD
+========================= */
+
+function refreshStudent(){
+
+    document.getElementById("studentWelcome").textContent =
+        currentUser.name;
+
+    const available=exams.filter(e=>e.published);
+
+    const myResults=results.filter(
+        r=>r.studentUsername===currentUser.username
+    );
+
+    document.getElementById("availableCount").textContent=
+        available.length;
+
+    document.getElementById("completedCount").textContent=
+        myResults.length;
+
+    let avg=0;
+
+    if(myResults.length){
+        avg=myResults.reduce(
+            (sum,r)=>sum+r.percentage,0
+        )/myResults.length;
+    }
+
+    document.getElementById("averagePercentage").textContent=
+        Math.round(avg)+"%";
+
+    renderAvailableCards("studentExamCards");
+}
+
+function renderAvailableExams(){
+
+    renderAvailableCards("availableExamCards");
+}
+
+function renderAvailableCards(containerId){
+
+    const container=document.getElementById(containerId);
+
+    container.innerHTML="";
+
+    exams.filter(e=>e.published).forEach(exam=>{
+
+        const count=questions.filter(
+            q=>q.examId===exam.id
+        ).length;
+
+        const alreadyTaken=results.some(
+            r=>r.studentUsername===currentUser.username &&
+                r.examId===exam.id
+        );
+
+        container.innerHTML += `
+        <div class="col-md-6 col-lg-4">
+
+            <div class="exam-card">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="badge bg-primary">
+                        ${exam.subject}
+                    </span>
+
+                    <i class="bi bi-file-earmark-text fs-4 text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold">${exam.title}</h5>
+
+                <p class="text-muted">
+                    Test your knowledge with this examination.
+                </p>
+
+                <div class="small text-muted mb-3">
+                    <i class="bi bi-question-circle"></i>
+                    ${count} Questions
+                    &nbsp;&nbsp;
+                    <i class="bi bi-clock"></i>
+                    ${exam.duration} Minutes
+                </div>
+
+                ${
+                    alreadyTaken
+                    ?
+                    `<button class="btn btn-outline-success w-100" disabled>
+                        <i class="bi bi-check-circle"></i>
+                        Completed
+                    </button>`
+                    :
+                    `<button class="btn btn-primary w-100"
+                        onclick="startExam(${exam.id})">
+                        Start Examination
+                    </button>`
+                }
+
+            </div>
+
+        </div>`;
+    });
+}
+
+
+/* =========================
+   START EXAM
+========================= */
+
+function startExam(id){
+
+    currentExam=exams.find(e=>e.id===id);
+
+    if(!currentExam) return;
+
+    const examQuestions=questions.filter(
+        q=>q.examId===id
+    );
+
+    if(!examQuestions.length){
+        alert("This examination has no questions yet.");
+        return;
+    }
+
+    currentQuestion=0;
+
+    answers=new Array(examQuestions.length).fill(null);
+
+    remainingSeconds=currentExam.duration*60;
+
+    document.getElementById("currentExamTitle").textContent=
+        currentExam.title;
+
+    document.getElementById("currentExamSubject").textContent=
+        currentExam.subject;
+
+    showPage("examScreen");
+
+    renderQuestion();
+    renderQuestionNavigation();
+    startTimer();
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
+function startTimer(){
+
+    clearInterval(timerInterval);
+
+    updateTimer();
+
+    timerInterval=setInterval(()=>{
+
+        remainingSeconds--;
+
+        updateTimer();
+
+        if(remainingSeconds<=0){
+
+            clearInterval(timerInterval);
+
+            alert("Time is over. Your exam will be submitted.");
+
+            submitExam();
+        }
+
+    },1000);
+}
+
+function updateTimer(){
+
+    const min=Math.floor(remainingSeconds/60);
+    const sec=remainingSeconds%60;
+
+    const timer=document.getElementById("timer");
+
+    timer.textContent=
+        String(min).padStart(2,"0")+":"+
+        String(sec).padStart(2,"0");
+
+    if(remainingSeconds<=300){
+        timer.style.background="#fee2e2";
+        timer.style.color="#dc2626";
+    }
+}
+
+
+/* =========================
+   QUESTION
+========================= */
+
+function renderQuestion(){
+
+    const examQuestions=questions.filter(
+        q=>q.examId===currentExam.id
+    );
+
+    const q=examQuestions[currentQuestion];
+
+    document.getElementById("questionCounter").textContent=
+        `Question ${currentQuestion+1} of ${examQuestions.length}`;
+
+    document.getElementById("questionText").textContent=
+        q.text;
+
+    const options=document.getElementById("options");
+
+    options.innerHTML="";
+
+    q.options.forEach((option,index)=>{
+
+        const selected=answers[currentQuestion]===index;
+
+        options.innerHTML += `
+        <div class="option ${selected?"selected":""}"
+             onclick="selectAnswer(${index})">
+
+            <input type="radio"
+                ${selected?"checked":""}
+                name="answer">
+
+            <strong>${String.fromCharCode(65+index)}.</strong>
+            ${option}
+
+        </div>`;
+    });
+
+    renderQuestionNavigation();
+}
+
+function selectAnswer(index){
+
+    answers[currentQuestion]=index;
+
+    renderQuestion();
+}
+
+function previousQuestion(){
+
+    if(currentQuestion>0){
+
+        currentQuestion--;
+
+        renderQuestion();
+    }
+}
+
+function nextQuestion(){
+
+    const total=questions.filter(
+        q=>q.examId===currentExam.id
+    ).length;
+
+    if(currentQuestion<total-1){
+
+        currentQuestion++;
+
+        renderQuestion();
+
+    }else{
+
+        alert("This is the last question.");
+    }
+}
+
+function goToQuestion(index){
+
+    currentQuestion=index;
+
+    renderQuestion();
+}
+
+function renderQuestionNavigation(){
+
+    const container=document.getElementById("questionNavigation");
+
+    const examQuestions=questions.filter(
+        q=>q.examId===currentExam.id
+    );
+
+    container.innerHTML="";
+
+    examQuestions.forEach((q,index)=>{
+
+        let cls="question-number";
+
+        if(index===currentQuestion){
+            cls+=" current";
+        }else if(answers[index]!==null){
+            cls+=" answered";
+        }
+
+        container.innerHTML += `
+            <button class="${cls}"
+                onclick="goToQuestion(${index})">
+                ${index+1}
+            </button>`;
+    });
+}
+
+
+/* =========================
+   SUBMIT EXAM
+========================= */
+
+function submitExam(){
+
+    if(!currentExam) return;
+
+    const unanswered=answers.filter(
+        a=>a===null
+    ).length;
+
+    if(remainingSeconds>0 && unanswered>0){
+
+        const confirmSubmit=confirm(
+            `You have ${unanswered} unanswered question(s). Submit anyway?`
+        );
+
+        if(!confirmSubmit) return;
+    }
+
+    clearInterval(timerInterval);
+
+    const examQuestions=questions.filter(
+        q=>q.examId===currentExam.id
+    );
+
+    let correct=0;
+
+    examQuestions.forEach((q,index)=>{
+
+        if(answers[index]===q.correct){
+            correct++;
+        }
+    });
+
+    const total=examQuestions.length;
+
+    const percentage=Math.round(
+        (correct/total)*100
+    );
+
+    const status=
+        percentage>=currentExam.passing
+        ?"PASS"
+        :"FAIL";
+
+    const result={
+        id:Date.now(),
+        studentUsername:currentUser.username,
+        student:currentUser.name,
+        examId:currentExam.id,
+        exam:currentExam.title,
+        score:correct,
+        total,
+        percentage,
+        correct,
+        wrong:total-correct-unansweredCount(examQuestions),
+        unanswered:unanswered,
+        status,
+        answers:[...answers],
+        date:new Date().toLocaleString()
+    };
+
+    results.push(result);
+
+    saveData();
+
+    displayResult(result,examQuestions);
+}
+
+function unansweredCount(examQuestions){
+
+    return answers.filter(
+        a=>a===null
+    ).length;
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+function displayResult(result,examQuestions){
+
+    document.getElementById("resultExamName").textContent=
+        result.exam;
+
+    document.getElementById("resultPercentage").textContent=
+        result.percentage+"%";
+
+    document.getElementById("resultScore").textContent=
+        result.score;
+
+    document.getElementById("resultTotal").textContent=
+        result.total;
+
+    document.getElementById("resultCorrect").textContent=
+        result.correct;
+
+    document.getElementById("resultWrong").textContent=
+        result.wrong;
+
+    const status=document.getElementById("resultStatus");
+
+    status.textContent=result.status;
+
+    status.className=
+        result.status==="PASS"
+        ?"text-success fw-bold"
+        :"text-danger fw-bold";
+
+    document.getElementById("resultCircle")
+        .style.setProperty(
+            "--percent",
+            result.percentage+"%"
+        );
+
+    const review=document.getElementById("answerReview");
+
+    review.innerHTML="";
+
+    examQuestions.forEach((q,index)=>{
+
+        const studentAnswer=
+            result.answers[index];
+
+        const isCorrect=
+            studentAnswer===q.correct;
+
+        const unanswered=
+            studentAnswer===null;
+
+        let className=
+            unanswered
+            ?"review-card"
+            :isCorrect
+            ?"review-card correct"
+            :"review-card wrong";
+
+        let statusText=
+            unanswered
+            ?"Not Attempted"
+            :isCorrect
+            ?"Correct"
+            :"Wrong";
+
+        let statusClass=
+            unanswered
+            ?"bg-warning text-dark"
+            :isCorrect
+            ?"bg-success"
+            :"bg-danger";
+
+        review.innerHTML += `
+        <div class="${className}">
+
+            <div class="d-flex justify-content-between">
+                <h5>
+                    Question ${index+1}
+                </h5>
+
+                <span class="badge ${statusClass}">
+                    ${statusText}
+                </span>
+            </div>
+
+            <p class="fw-semibold">
+                ${q.text}
+            </p>
+
+            <p>
+                <strong>Your Answer:</strong>
+                ${
+                    unanswered
+                    ? "Not Answered"
+                    : q.options[studentAnswer]
+                }
+            </p>
+
+            <p class="text-success">
+                <strong>Correct Answer:</strong>
+                ${q.options[q.correct]}
+            </p>
+
+            <div class="alert alert-light mb-0">
+                <strong>Explanation:</strong>
+                ${q.explanation || "No explanation provided."}
+            </div>
+
+        </div>`;
+    });
+
+    showPage("resultScreen");
+}
+
+
+/* =========================
+   MY RESULTS
+========================= */
+
+function renderMyResults(){
+
+    const tbody=document.getElementById("myResultTable");
+
+    tbody.innerHTML="";
+
+    results
+    .filter(r=>r.studentUsername===currentUser.username)
+    .slice()
+    .reverse()
+    .forEach(r=>{
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${r.exam}</td>
+            <td>${r.score}/${r.total}</td>
+            <td>${r.percentage}%</td>
+            <td>
+                <span class="badge ${
+                    r.status==="PASS"
+                    ?"bg-success"
+                    :"bg-danger"
+                }">
+                    ${r.status}
+                </span>
+            </td>
+            <td>${r.date}</td>
+        </tr>`;
+    });
+}
+
+
+/* =========================
+   BACK TO DASHBOARD
+========================= */
+
+function backToStudentDashboard(){
+
+    currentExam=null;
+
+    showPage("studentDashboard");
+
+    refreshStudent();
+}
+
+
+/* =========================
+   MOBILE SIDEBAR
+========================= */
+
+function toggleSidebar(){
+
+    document.getElementById("sidebar")
+        .classList.toggle("show");
+}
+
+
+/* =========================
+   INITIALIZATION
+========================= */
+
+saveData();
+
+</script>
+
+</body>
+</html>
